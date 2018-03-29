@@ -130,5 +130,8 @@ less
 # dont let the sucker try and boot into graphical
 systemctl set-default multi-user.target
 
+# have serial console come up on systemd - again NOTE hard coded ttyS0
+ln -s /lib/systemd/system/getty\@.service /etc/systemd/system/getty.target.wants/getty\@ttyS1.service
+
 # leave chroot
 exit
