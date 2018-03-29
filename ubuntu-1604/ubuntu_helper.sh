@@ -127,5 +127,8 @@ lsb-release \
 man-db \
 less
 
+# dont let the sucker try and boot into graphical
+systemctl set-default multi-user.target
+
 # leave chroot
 exit
