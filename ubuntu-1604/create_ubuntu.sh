@@ -1,7 +1,7 @@
 #!/bin/bash
 MNT_PATH=/mnt/ubuntu
 # in GiB
-SIZE=2
+SIZE=1
 
 IMG_NAME=ubuntu-1604.img
 PART_NAME=ubuntu

@@ -29,10 +29,10 @@ dpkg-reconfigure -f noninteractive tzdata
 
 # add security and source to deb list
 cat <<'EOF' > /etc/apt/sources.list
-echo "deb http://archive.ubuntu.com/ubuntu xenial main
-echo "deb-src http://archive.ubuntu.com/ubuntu xenial main
-echo "deb http://security.ubuntu.com/ubuntu xenial-security main
-echo "deb-src http://security.ubuntu.com/ubuntu xenial-security main
+deb http://archive.ubuntu.com/ubuntu xenial main
+deb-src http://archive.ubuntu.com/ubuntu xenial main
+deb http://security.ubuntu.com/ubuntu xenial-security main
+deb-src http://security.ubuntu.com/ubuntu xenial-security main
 EOF
 
 # refresh the deb lists
