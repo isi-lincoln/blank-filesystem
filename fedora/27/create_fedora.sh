@@ -38,6 +38,13 @@ sudo rm json
 sudo rm VERSION
 
 cd $HERE
+
+# now to actually configure the operating system call our
+# helper script that will install extra modules as well
+# as add additional users
+sudo cp ./fedora_helper.sh $MNT_PATH/fedora_helper.sh
+sudo LANG=C.UTF-8 chroot $MNT_PATH /fedora_helper.sh
+
 ## at this point i cant do anything with chroot, so copy
 # fedora_helper script to MNT_PATH and run it to continue
 # fedora installation

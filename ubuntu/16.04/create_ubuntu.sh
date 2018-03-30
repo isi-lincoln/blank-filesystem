@@ -32,7 +32,7 @@ debootstrap --arch=amd64 --variant=buildd xenial "$MNT_PATH" \
 # helper script that will install extra modules as well
 # as add additional users
 sudo cp ./ubuntu_helper.sh $MNT_PATH/ubuntu_helper.sh
-LANG=C.UTF-8 chroot $MNT_PATH /ubuntu_helper.sh
+sudo LANG=C.UTF-8 chroot $MNT_PATH /ubuntu_helper.sh
 
 ## at this point i cant do anything with chroot, so copy
 # ubuntu_helper script to MNT_PATH and run it to continue
