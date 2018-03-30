@@ -20,6 +20,8 @@ echo "test ALL=(ALL) ALL" >> /etc/sudoers
 
 # dont let the sucker try and boot into graphical
 systemctl set-default multi-user.target
+rm /etc/systemd/system/default.target
+ln -s /usr/lib/systemd/system/multi-user.target /etc/systemd/system/default.target
 
 # have serial console come up on systemd - again NOTE hard coded ttyS0
 cat <<'EOF' > /etc/systemd/system/getty.target.wants/getty\@ttyS1.service
