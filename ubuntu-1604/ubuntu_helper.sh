@@ -131,7 +131,23 @@ less
 systemctl set-default multi-user.target
 
 # have serial console come up on systemd - again NOTE hard coded ttyS0
-ln -s /lib/systemd/system/getty\@.service /etc/systemd/system/getty.target.wants/getty\@ttyS1.service
+cat <<'EOF' > /etc/systemd/system/getty.target.wants/getty\@ttyS1.service
+# https://ubuntuforums.org/showthread.php?t=2343595
+[Unit]
+Description=Serial Console
+After=systemd-user-sessions.service plymouth-quit-wait.service
+After=rc-local.service
+Before=getty.target
+IgnoreOnIsolate=yes
+
+[Service]
+# ExecStart=-/sbin/agetty --noclear %I $TERM
+/sbin/agetty -L 115200 %I $TERM
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
 
 # leave chroot
 exit
