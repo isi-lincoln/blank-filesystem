@@ -126,6 +126,7 @@ tcpdump \
 lsb-release \
 man-db \
 systemd \
+openssh-server \
 less
 
 # dont let the sucker try and boot into graphical

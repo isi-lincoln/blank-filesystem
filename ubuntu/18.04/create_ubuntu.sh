@@ -34,6 +34,10 @@ sudo debootstrap --arch=amd64 --variant=buildd bionic "$MNT_PATH" \
 sudo cp ./ubuntu_helper.sh $MNT_PATH/ubuntu_helper.sh
 sudo LANG=C.UTF-8 chroot $MNT_PATH /ubuntu_helper.sh
 
+# setup another user rvn
+sudo cp ./add_rvn.sh $MNT_PATH/add_rvn.sh
+sudo LANG=C.UTF-8 chroot $MNT_PATH /add_rvn.sh
+
 ## at this point i cant do anything with chroot, so copy
 # ubuntu_helper script to MNT_PATH and run it to continue
 # ubuntu installation
