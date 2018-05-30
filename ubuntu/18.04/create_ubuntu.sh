@@ -3,7 +3,7 @@ MNT_PATH=/mnt/ubuntu
 # in GiB
 SIZE=1
 
-IMG_NAME=ubuntu-1604.img
+IMG_NAME=ubuntu-1804.img
 PART_NAME=ubuntu
 
 LOOP_IFACE=/dev/loop0
@@ -25,7 +25,7 @@ sudo mount "$LOOP_IFACE"p1 $MNT_PATH
 
 # using debootstrap get all the necessary components for the
 # file system to install at MNT_PATH
-sudo debootstrap --arch=amd64 --variant=buildd xenial "$MNT_PATH" \
+sudo debootstrap --arch=amd64 --variant=buildd bionic "$MNT_PATH" \
     http://archive.ubuntu.com/ubuntu
 
 # now to actually configure the operating system call our
