@@ -25,7 +25,6 @@ EOF
 debconf-set-selections /tzdata.conf
 rm /etc/timezone
 rm /etc/localtime
-dpkg-reconfigure -f noninteractive tzdata
 
 # add security and source to deb list
 cat <<'EOF' > /etc/apt/sources.list
@@ -83,8 +82,6 @@ d-i keyboard-configuration/unsupported_config_options   boolean true
 keyboard-configuration  keyboard-configuration/unsupported_config_options   boolean true
 EOF
 
-debconf-set-selections /keyboard.txt
-dpkg-reconfigure -f noninteractive keyboard-configuration
 
 # install sudo before we mess with sudoers
 apt-get install -qy sudo
@@ -94,7 +91,8 @@ apt-get install -qy sudo
 useradd -s /bin/bash -m -p "e/CBifV4.zT.6" test
 addgroup --system admin
 adduser test admin
-echo "admin ALL=(ALL) ALL" >> /etc/sudoers
+echo "admin ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+echo "rvn ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 # kexec-tools is unnecessary for most people - comment out as needed
 DEBIAN_FRONTEND=noninteractive apt-get -yq install kexec-tools
@@ -125,7 +123,16 @@ isc-dhcp-client \
 tcpdump \
 lsb-release \
 man-db \
+keyboard-configuration \
 less
+
+# configure timezone
+dpkg-reconfigure -f noninteractive tzdata
+
+# configure keyboard
+debconf-set-selections /keyboard.txt
+dpkg-reconfigure -f noninteractive keyboard-configuration
+
 
 # dont let the sucker try and boot into graphical
 systemctl set-default multi-user.target
@@ -165,6 +172,17 @@ TTYReset=yes
 WantedBy=multi-user.target
 DefaultInstance=tty1
 EOF
+
+cat <<'EOF' > /etc/default/keyboard
+# KEYBOARD CONFIGURATION FILE
+# Consult the keyboard(5) manual page.
+XKBMODEL="pc105"
+XKBLAYOUT="us"
+XKBVARIANT=""
+XKBOPTIONS=""
+BACKSPACE="guess"
+EOF
+
 
 # leave chroot
 exit
