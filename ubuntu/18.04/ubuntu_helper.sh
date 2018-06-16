@@ -127,7 +127,14 @@ lsb-release \
 man-db \
 systemd \
 openssh-server \
+keyboard-configuration \
 less
+
+dpkg-reconfigure -f noninteractive tzdata
+
+# configure keyboard
+debconf-set-selections /keyboard.txt
+dpkg-reconfigure -f noninteractive keyboard-configuration
 
 # dont let the sucker try and boot into graphical
 systemctl set-default multi-user.target
