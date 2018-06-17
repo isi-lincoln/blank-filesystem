@@ -8,8 +8,6 @@ PART_NAME=fedora
 
 LOOP_IFACE=/dev/loop0
 
-HERE=$(pwd)
-
 # create the directory to mount to
 sudo mkdir -p $MNT_PATH
 # allocate space for the alpine image to use
@@ -25,19 +23,14 @@ sudo mke2fs -t ext4 "$LOOP_IFACE"p1
 # mount image on loop to your file system
 sudo mount "$LOOP_IFACE"p1 $MNT_PATH
 
-
-cd $MNT_PATH
-# from https://nmilosev.svbtle.com/quick-and-easy-fedora-minimal-chroot
-sudo wget http://mirror.cs.pitt.edu/fedora/linux/releases/27/Docker/x86_64/images/Fedora-Docker-Base-27-1.6.x86_64.tar.xz
-
-sudo tar xvf Fedora-Docker-Base-27-1.6.x86_64.tar.xz --strip-components=1
-sudo tar xvpf layer.tar
-sudo rm layer.tar
-sudo rm Fedora-Docker-Base-27-1.6.x86_64.tar.xz
-sudo rm json
-sudo rm VERSION
-
-cd $HERE
+# https://geek.co.il/2010/03/14/how-to-build-a-chroot-jail-environment-for-centos
+FEDORA=fedora-release-27-1.noarch.rpm
+sudo mkdir -p $MNT_PATH/var/lib/rpm
+sudo rpm --rebuilddb --root=$MNT_PATH
+wget https://dl.fedoraproject.org/pub/fedora-secondary/releases/27/Everything/aarch64/os/Packages/f/$FEDORA
+sudo rpm -i --root=$MNT_PATH --nodeps $FEDORA
+sudo yum --releasever=27 --nogpgcheck --installroot=$MNT_PATH install -y rpm-build yum dnf
+rm $FEDORA
 
 # now to actually configure the operating system call our
 # helper script that will install extra modules as well
@@ -45,6 +38,8 @@ cd $HERE
 sudo cp ./fedora_helper.sh $MNT_PATH/fedora_helper.sh
 sudo LANG=C.UTF-8 chroot $MNT_PATH /fedora_helper.sh
 
+sudo cp ./add_rvn.sh $MNT_PATH/add_rvn.sh
+sudo LANG=C.UTF-8 chroot $MNT_PATH /add_rvn.sh
 ## at this point i cant do anything with chroot, so copy
 # fedora_helper script to MNT_PATH and run it to continue
 # fedora installation

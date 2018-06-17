@@ -1,10 +1,12 @@
 # in chroot environment - prepare the filesystem for use
-dnf install -y \
+yum --releasever=27 install -y \
 iputils \
 sudo \
 kexec-tools \
 wget \
-vim
+vim \
+gcc \
+wget
 
 # TODO: note there is no root partition in fstab
 # would like to get uuid from parted and pass that in here
@@ -15,13 +17,15 @@ proc             /proc         proc    defaults                 0    0
 sys              /sys          sysfs   defaults                 0    0
 EOF
 
+groupadd --system admin
+echo "admin ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 useradd -s /bin/bash -m -p "e/CBifV4.zT.6" test
 echo "test ALL=(ALL) ALL" >> /etc/sudoers
 
 # dont let the sucker try and boot into graphical
 systemctl set-default multi-user.target
 rm /etc/systemd/system/default.target
-ln -s /usr/lib/systemd/system/multi-user.target /etc/systemd/system/default.target
+ln -sf /lib/systemd/system/multi-user.target /etc/systemd/system/default.target
 
 # have serial console come up on systemd - again NOTE hard coded ttyS0
 cat <<'EOF' > /etc/systemd/system/getty.target.wants/getty\@ttyS1.service
@@ -58,6 +62,8 @@ TTYReset=yes
 WantedBy=multi-user.target
 DefaultInstance=tty1
 EOF
+
+sed -ie 's/id:5:initdefault:/id:3:initdefault:/g' /etc/inittab
 
 # leave chroot
 exit
