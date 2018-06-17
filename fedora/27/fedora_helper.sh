@@ -1,14 +1,19 @@
 # in chroot environment - prepare the filesystem for use
 
-# TODO: note there is no root partition in fstab
-# would like to get uuid from parted and pass that in here
-# as the root partition
 
-dnf install sudo
 
+# set up resolvers so we can talk to the internet
 cat <<'EOF' > /etc/resolv.conf
 nameserver 8.8.8.8
 EOF
+
+dnf --releasever=27 --nogpgcheck install -y sudo
+yum --releasever=27 clean all
+dnf --releasever=27 clean packages
+
+# TODO: note there is no root partition in fstab
+# would like to get uuid from parted and pass that in here
+# as the root partition
 
 cat <<'EOF' > /etc/fstab
 proc             /proc         proc    defaults                 0    0

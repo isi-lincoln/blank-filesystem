@@ -1,7 +1,7 @@
 #!/bin/bash
 MNT_PATH=/mnt/fedora
-# in GiB
-SIZE=1
+# in GiB (1.5)
+SIZE=1572864
 
 IMG_NAME=fedora-27.img
 PART_NAME=fedora
@@ -11,7 +11,7 @@ LOOP_IFACE=/dev/loop0
 # create the directory to mount to
 sudo mkdir -p $MNT_PATH
 # allocate space for the alpine image to use
-dd if=/dev/zero of=$IMG_NAME count=1024x1024x$SIZE bs=1024
+dd if=/dev/zero of=$IMG_NAME count=$SIZE bs=1024
 # partition the alpine image with a single ext4 parition
 sudo parted -s $IMG_NAME \
     mklabel gpt mkpart primary ext4 0% 100% \
@@ -29,7 +29,7 @@ sudo mkdir -p $MNT_PATH/var/lib/rpm
 sudo rpm --rebuilddb --root=$MNT_PATH
 wget https://dl.fedoraproject.org/pub/fedora-secondary/releases/27/Everything/aarch64/os/Packages/f/$FEDORA
 sudo rpm -i --root=$MNT_PATH --nodeps $FEDORA
-sudo yum --releasever=27 --nogpgcheck --installroot=$MNT_PATH install -y rpm-build yum dnf net-tools kexec-tools wget vim-minimal make gcc
+sudo yum --releasever=27 --nogpgcheck --installroot=$MNT_PATH install -y yum dnf net-tools kexec-tools wget make gcc
 rm $FEDORA
 
 sudo cp ./repos/yum.conf $MNT_PATH/etc/yum.conf
