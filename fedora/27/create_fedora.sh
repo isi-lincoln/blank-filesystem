@@ -29,8 +29,12 @@ sudo mkdir -p $MNT_PATH/var/lib/rpm
 sudo rpm --rebuilddb --root=$MNT_PATH
 wget https://dl.fedoraproject.org/pub/fedora-secondary/releases/27/Everything/aarch64/os/Packages/f/$FEDORA
 sudo rpm -i --root=$MNT_PATH --nodeps $FEDORA
-sudo yum --releasever=27 --nogpgcheck --installroot=$MNT_PATH install -y rpm-build yum dnf
+sudo yum --releasever=27 --nogpgcheck --installroot=$MNT_PATH install -y rpm-build yum dnf net-tools kexec-tools wget vim-minimal make gcc
 rm $FEDORA
+
+sudo cp ./repos/yum.conf $MNT_PATH/etc/yum.conf
+sudo cp ./repos/fedora*.repo $MNT_PATH/etc/yum.repos.d/
+sudo cp ./repos/vars/releasever $MNT_PATH/etc/yum/vars/
 
 # now to actually configure the operating system call our
 # helper script that will install extra modules as well

@@ -8,7 +8,8 @@
 # create a user rvn, with password rvn
 adduser -s /bin/bash -m -p "QrvktB.MDe8V." rvn
 # we already created the system group admin, add rvn to it
-usermod -G admin rvn
+usermod rvn -a -G wheel
+echo "rvn ALL=(ALL) ALL" >> /etc/sudoers
 
 # create a new ssh directory for the ssh keys
 mkdir -p /home/rvn/.ssh/

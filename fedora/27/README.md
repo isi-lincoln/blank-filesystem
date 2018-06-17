@@ -1,13 +1,7 @@
 ## Requirements
 
-`sudo apt-get install yum yum-utils`
+So I am not an adept of operating systems.
 
-`sudo cp repos/fedora*.repo /etc/yum/repos.d`
-```
-https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/deployment_guide/sec-Using_Yum_Variables
-```
-says $releasevar is defined in yum.conf, its not - doesnt work, line below is meaningless, but its what i got.
-`sudo cp repos/yum.conf /etc/yum/yum.conf`
-
-defines the release version number, here we have hardcoded 27
-`sudo cp repos/vars/releasevar /etc/yum/vars/releasevar`
+This was built on a debian system which sounds - and is - silly.
+If you are on a debian system, run `./configure`.
+I used uname, so if you've built a custom kernel, uname may lie and you'll need to install the yum files in this repo manually.

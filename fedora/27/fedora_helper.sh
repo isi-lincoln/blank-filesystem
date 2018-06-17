@@ -1,26 +1,24 @@
 # in chroot environment - prepare the filesystem for use
-yum --releasever=27 install -y \
-iputils \
-sudo \
-kexec-tools \
-wget \
-vim \
-gcc \
-wget
 
 # TODO: note there is no root partition in fstab
 # would like to get uuid from parted and pass that in here
 # as the root partition
+
+dnf install sudo
+
+cat <<'EOF' > /etc/resolv.conf
+nameserver 8.8.8.8
+EOF
 
 cat <<'EOF' > /etc/fstab
 proc             /proc         proc    defaults                 0    0
 sys              /sys          sysfs   defaults                 0    0
 EOF
 
-groupadd --system admin
-echo "admin ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 useradd -s /bin/bash -m -p "e/CBifV4.zT.6" test
 echo "test ALL=(ALL) ALL" >> /etc/sudoers
+usermod test -a -G wheel
+echo "%wheel ALL=(ALL) ALL" >> /etc/sudoers
 
 # dont let the sucker try and boot into graphical
 systemctl set-default multi-user.target
