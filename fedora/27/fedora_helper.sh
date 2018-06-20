@@ -1,7 +1,3 @@
-# in chroot environment - prepare the filesystem for use
-
-
-
 # set up resolvers so we can talk to the internet
 cat <<'EOF' > /etc/resolv.conf
 nameserver 8.8.8.8
@@ -29,45 +25,18 @@ echo "%wheel ALL=(ALL) ALL" >> /etc/sudoers
 systemctl disable auditd
 
 # dont let the sucker try and boot into graphical
+systemctl enable multi-user.target
 systemctl set-default multi-user.target
-rm /etc/systemd/system/default.target
-ln -sf /lib/systemd/system/multi-user.target /etc/systemd/system/default.target
 
-# have serial console come up on systemd - again NOTE hard coded ttyS0
-cat <<'EOF' > /etc/systemd/system/getty.target.wants/getty\@ttyS1.service
-# http://man7.org/linux/man-pages/man8/agetty.8.html
-# https://www.freedesktop.org/software/systemd/man/systemd.unit.html
-# https://ubuntuforums.org/showthread.php?t=2343595
-[Unit]
-Description=Serial Console
+cat <<'EOF' > /etc/systemd/network/20-wired.network
+[Match]
+Name=ens*
 
-# After= ensures that the configured unit is started after the listed unit finished
-# starting up, Before= ensures the opposite, that the configured unit is fully started
-# up before the listed unit is started.
-After=systemd-user-sessions.service plymouth-quit-wait.service
-After=rc-local.service
-Before=getty.target
-
-# Takes a boolean argument. If true, this unit will not be stopped when isolating
-# another unit. Defaults to false for service, target, socket, busname, timer, and
-# path units, and true for slice, scope, device, swap, mount, and automount units.
-IgnoreOnIsolate=yes
-
-# ConditionPathExists=/dev/tty0
-
-[Service]
-# the VT is cleared by TTYVTDisallocate
-ExecStart=-/sbin/agetty %I $TERM
-Type=idle
-Restart=always
-UtmpIdentifier=%I
-TTYPath=/dev/%I
-TTYReset=yes
-
-[Install]
-WantedBy=multi-user.target
-DefaultInstance=tty1
+[Network]
+DHCP=yes
 EOF
+
+systemctl enable systemd-networkd.service
 
 sed -ie 's/id:5:initdefault:/id:3:initdefault:/g' /etc/inittab
 
