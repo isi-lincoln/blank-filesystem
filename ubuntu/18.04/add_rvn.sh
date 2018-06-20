@@ -15,4 +15,40 @@ mkdir -p /home/rvn/.ssh/
 # copy the rvn public key to rvn's authorized keys location
 wget -c https://mirror.deterlab.net/rvn/rvn.pub -O /home/rvn/.ssh/authorized_keys
 
+# we are going to overwrite network interfaces to dhcp them
+cat <<'EOF' > /etc/network/interfaces
+auto ens3
+iface ens3 inet dhcp
+
+auto ens4
+iface ens4 inet dhcp
+EOF
+
+# wait for dhcp to come up
+# systemctl disable systemd-networkd-wait-online.service
+
+# create iamme binary
+mkdir -p /iamme/
+wget -c https://raw.githubusercontent.com/rcgoodfellow/raven/master/util/iamme/iamme.c -O /iamme/iamme.c
+wget -c https://raw.githubusercontent.com/rcgoodfellow/raven/master/util/iamme/Makefile -O /iamme/Makefile
+cd /iamme/ && make
+
+cat <<'EOF' > /etc/systemd/system/iamme.service
+[Unit]
+Description=Make sure dhcp address is registered with raven
+
+[Service]
+Type=simple
+RemainAfterExit=no
+Environment=IFACE='ens3' DHCP_SERV='172.22.0.1'
+ExecStart=/iamme/iamme $IFACE $DHCP_SERV
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sed -i 's/timeout 300/timeout 15/g' /etc/dhcp/dhclient.conf
+
+
+
 exit

@@ -25,6 +25,9 @@ echo "test ALL=(ALL) ALL" >> /etc/sudoers
 usermod test -a -G wheel
 echo "%wheel ALL=(ALL) ALL" >> /etc/sudoers
 
+# disable all the audit output
+systemctl disable auditd
+
 # dont let the sucker try and boot into graphical
 systemctl set-default multi-user.target
 rm /etc/systemd/system/default.target

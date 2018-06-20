@@ -17,13 +17,13 @@ mkdir -p /home/rvn/.ssh/
 wget -c https://mirror.deterlab.net/rvn/rvn.pub -O /home/rvn/.ssh/authorized_keys
 
 # we are going to overwrite network interfaces to dhcp them
-cat <<'EOF' > /etc/sysconfig/network-scripts/ifcfg-eno1
-DEVICE=eno1
+cat <<'EOF' > /etc/sysconfig/network-scripts/ifcfg-ens3
+DEVICE=ens3
 BOOTPROTO=dhcp
 ONBOOT=yes
 EOF
-cat <<'EOF' > /etc/sysconfig/network-scripts/ifcfg-eno2
-DEVICE=eno2
+cat <<'EOF' > /etc/sysconfig/network-scripts/ifcfg-ens4
+DEVICE=ens4
 BOOTPROTO=dhcp
 ONBOOT=yes
 EOF
