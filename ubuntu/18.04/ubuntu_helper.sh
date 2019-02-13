@@ -1,26 +1,47 @@
-# set up resolvers so we can talk to the internet
-cat <<'EOF' > /etc/resolv.conf
-nameserver 8.8.8.8
+#!/bin/bash
+
+UUID=""
+if [ $# -eq 1 ]; then
+	UUID="$1"
+	echo "Set UUID: ", $UUID
+fi
+
+apt-get update
+
+# add security and source to deb list
+cat <<'EOF' > /etc/apt/sources.list
+deb http://in.archive.ubuntu.com/ubuntu/ bionic main
+deb-src http://in.archive.ubuntu.com/ubuntu/ bionic main
+
+deb http://security.ubuntu.com/ubuntu bionic-security main
+deb-src http://security.ubuntu.com/ubuntu bionic-security main
 EOF
 
 # in chroot environment - prepare the filesystem for use
 apt-get update
-apt-get install -y makedev
+apt-get install -y makedev linux-image-generic
+
+# set up the device files
 mount none /proc -t proc
 cd /dev
 MAKEDEV generic
 umount /proc
 
 # TODO: note there is no root partition in fstab
-# would like to get uuid from parted and pass that in here
-# as the root partition
-
-cat <<'EOF' > /etc/fstab
-proc             /proc         proc    defaults                 0    0
-sys              /sys          sysfs   defaults                 0    0
+tee /etc/fstab <<'EOF'
+${UUID}	/	ext4	defaults	0	1
+proc		/proc	proc	defaults	0	0
+sys		/sys	sysfs	defaults	0	0
 EOF
 
-cd /
+# try mounting everything
+mount -a
+
+# set up resolvers so we can talk to the internet
+cat <<'EOF' > /etc/resolv.conf
+nameserver 8.8.8.8
+EOF
+
 
 # set up time/locale
 cat <<'EOF' > /tzdata.conf
@@ -31,19 +52,6 @@ debconf-set-selections /tzdata.conf
 rm /etc/timezone
 rm /etc/localtime
 dpkg-reconfigure -f noninteractive tzdata
-
-# add security and source to deb list
-cat <<'EOF' > /etc/apt/sources.list
-deb http://in.archive.ubuntu.com/ubuntu/ bionic main restricted universe multiverse
-deb http://in.archive.ubuntu.com/ubuntu/ bionic-updates main restricted universe multiverse
-deb http://in.archive.ubuntu.com/ubuntu/ bionic-backports main restricted universe multiverse
-deb http://security.ubuntu.com/ubuntu bionic-security main restricted universe multiverse
-
-deb-src http://in.archive.ubuntu.com/ubuntu/ bionic main restricted universe multiverse
-deb-src http://security.ubuntu.com/ubuntu bionic-security main restricted universe multiverse
-deb-src http://in.archive.ubuntu.com/ubuntu/ bionic-backports main restricted universe multiverse
-deb-src http://in.archive.ubuntu.com/ubuntu/ bionic-updates main restricted universe multiverse
-EOF
 
 # refresh the deb lists
 apt-get update
@@ -104,6 +112,12 @@ DHCP=yes
 EOF
 
 systemctl enable systemd-networkd.service
+
+# set hostname
+echo ubuntu1804 > /etc/hostname
+
+# clean up some of the packaging
+apt clean
 
 # leave chroot
 exit

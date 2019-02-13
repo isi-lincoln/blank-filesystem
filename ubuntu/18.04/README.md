@@ -1,4 +1,4 @@
-# Creating an ubuntu 16.04 filesystem
+# Creating an ubuntu 18.04 filesystem
 
 
 The ubuntu filesystem creation looks similiar to other methods with the

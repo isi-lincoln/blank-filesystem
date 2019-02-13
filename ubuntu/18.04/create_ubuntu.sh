@@ -1,12 +1,19 @@
 #!/bin/bash
+
+if [[ $EUID -ne 0 ]]; then
+   echo "requires root access to build - please sudo"
+   exit 1
+fi
+
 MNT_PATH=/mnt/ubuntu
 # in GiB
 SIZE=1
 
 IMG_NAME=ubuntu-1804.img
 PART_NAME=ubuntu
+UUID_FILE=".file"
 
-LOOP_IFACE=/dev/loop0
+LOOP_IFACE=$(losetup -f)
 
 # create the directory to mount to
 sudo mkdir -p $MNT_PATH
@@ -19,9 +26,12 @@ sudo parted -s $IMG_NAME \
 # mount the image to the loop interface
 sudo losetup -v -P $LOOP_IFACE $IMG_NAME
 # create the partition type, i've found parted doesnt set ext4
-sudo mke2fs -t ext4 "$LOOP_IFACE"p1
+sudo mke2fs -t ext4 "$LOOP_IFACE"p1 > $UUID_FILE
 # mount image on loop to your file system
 sudo mount "$LOOP_IFACE"p1 $MNT_PATH
+
+UUID=$(cat $UUID_FILE | grep UUID | cut -d ":" -f 2)
+echo $UUID
 
 # using debootstrap get all the necessary components for the
 # file system to install at MNT_PATH
@@ -32,7 +42,7 @@ sudo debootstrap --arch=amd64 --variant=buildd bionic "$MNT_PATH" \
 # helper script that will install extra modules as well
 # as add additional users
 sudo cp ./ubuntu_helper.sh $MNT_PATH/ubuntu_helper.sh
-sudo LANG=C.UTF-8 chroot $MNT_PATH /ubuntu_helper.sh
+sudo LANG=C.UTF-8 chroot $MNT_PATH /ubuntu_helper.sh $UUID
 
 # setup another user rvn
 sudo cp ./add_rvn.sh $MNT_PATH/add_rvn.sh
