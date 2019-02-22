@@ -1,12 +1,12 @@
 #!/bin/bash
-MNT_PATH=/mnt/ubuntu
+MNT_PATH=/mnt/ubuntu1604
 # in GiB
 SIZE=1
 
 IMG_NAME=ubuntu-1604.img
-PART_NAME=ubuntu
+PART_NAME=ubuntu1604
 
-LOOP_IFACE=/dev/loop0
+LOOP_IFACE=$(losetup -f)
 
 # create the directory to mount to
 sudo mkdir -p $MNT_PATH

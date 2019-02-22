@@ -94,9 +94,6 @@ adduser test admin
 echo "admin ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 echo "rvn ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-# kexec-tools is unnecessary for most people - comment out as needed
-DEBIAN_FRONTEND=noninteractive apt-get -yq install kexec-tools
-
 # this is a subset of tasksel standard
 # if you dont mind the extra space:
 # apt-get install tasksel

@@ -13,7 +13,7 @@ adduser rvn admin
 # create a new ssh directory for the ssh keys
 mkdir -p /home/rvn/.ssh/
 # copy the rvn public key to rvn's authorized keys location
-wget -c https://mirror.deterlab.net/rvn/rvn.pub -O /home/rvn/.ssh/authorized_keys
+wget --no-check-certificate -c https://mirror.deterlab.net/rvn/rvn.pub -O /home/rvn/.ssh/authorized_keys
 
 # we are going to overwrite network interfaces to dhcp them
 cat <<'EOF' > /etc/network/interfaces
@@ -29,8 +29,8 @@ EOF
 
 # create iamme binary
 mkdir -p /iamme/
-wget -c https://raw.githubusercontent.com/rcgoodfellow/raven/master/util/iamme/iamme.c -O /iamme/iamme.c
-wget -c https://raw.githubusercontent.com/rcgoodfellow/raven/master/util/iamme/Makefile -O /iamme/Makefile
+wget --no-check-certificate -c https://raw.githubusercontent.com/rcgoodfellow/raven/master/util/iamme/iamme.c -O /iamme/iamme.c
+wget --no-check-certificate -c https://raw.githubusercontent.com/rcgoodfellow/raven/master/util/iamme/Makefile -O /iamme/Makefile
 cd /iamme/ && make
 
 cat <<'EOF' > /etc/systemd/system/iamme.service
@@ -47,8 +47,9 @@ ExecStart=/iamme/iamme $IFACE $DHCP_SERV
 WantedBy=multi-user.target
 EOF
 
+mkdir -p /etc/dhcp/
+touch /etc/dhcp/dhclient.conf
 sed -i 's/timeout 300/timeout 15/g' /etc/dhcp/dhclient.conf
-
 
 
 exit

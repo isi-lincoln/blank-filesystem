@@ -14,6 +14,7 @@ PART_NAME=ubuntu
 UUID_FILE=".file"
 
 LOOP_IFACE=$(losetup -f)
+echo "using loop dev: " $LOOP_IFACE
 
 # create the directory to mount to
 sudo mkdir -p $MNT_PATH
@@ -23,6 +24,7 @@ dd if=/dev/zero of=$IMG_NAME count=1024x1024x$SIZE bs=1024
 sudo parted -s $IMG_NAME \
     mklabel gpt mkpart primary ext4 0% 100% \
     name 1 $PART_NAME
+
 # mount the image to the loop interface
 sudo losetup -v -P $LOOP_IFACE $IMG_NAME
 # create the partition type, i've found parted doesnt set ext4
@@ -35,6 +37,7 @@ echo $UUID
 
 # using debootstrap get all the necessary components for the
 # file system to install at MNT_PATH
+# buildd is the build-essentials variant
 sudo debootstrap --arch=amd64 --variant=buildd bionic "$MNT_PATH" \
     http://archive.ubuntu.com/ubuntu
 
